@@ -2,7 +2,6 @@ import { ClassModel } from "./class.model.js";
 import { ApiError } from "../../utils/apiError.js";
 import Timetable from "./timetable.model.js";
 import { generateTimetable } from "./scheduler/generator.js";
-import ClassModel from "./class.model.js";
 import FacultyProfile from "../users/profiles/faculty.profile.model.js";
 import { flattenClasses } from "./scheduler/flattener.js";
 

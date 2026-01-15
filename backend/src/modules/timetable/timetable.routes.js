@@ -17,7 +17,7 @@ router.post(
 router.post(
   "/generate",
   protect,
-  role("admin"),
+  allowRoles("admin"),
   generateTimetableController
 );
 

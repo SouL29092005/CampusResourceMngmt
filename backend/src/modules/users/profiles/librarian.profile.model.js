@@ -9,7 +9,12 @@ const librarianProfileSchema = new mongoose.Schema(
       unique: true
     },
 
-    libraryName: {
+    qualification: {
+      type: String,
+      required: true
+    },
+
+    librarySection: {
       type: String,
       required: true
     }

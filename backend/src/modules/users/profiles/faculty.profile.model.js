@@ -22,7 +22,23 @@ const facultyProfileSchema = new mongoose.Schema(
     maxWeeklyHours: {
       type: Number,
       default: 16
+    },
+
+    qualification: {
+      type: String,
+      required: true
+    },
+
+    experienceYears: {
+      type: Number,
+      min: 0
+    },
+
+    designation: {
+      type: String,
+      enum: ["Professor", "Associate Professor", "Assistant Professor", "Lecturer"]
     }
+
   },
   { timestamps: true }
 );

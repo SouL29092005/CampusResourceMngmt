@@ -17,7 +17,6 @@ export const createUserByAdmin = async (req, res) => {
     email,
     password,
     role,
-    department
   });
 
   switch (role) {
@@ -37,7 +36,6 @@ export const createUserByAdmin = async (req, res) => {
     case "librarian":
       await LibrarianProfile.create({
         userId: user._id,
-        libraryName: extra.libraryName
       });
       break;
 
