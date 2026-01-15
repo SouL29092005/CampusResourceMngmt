@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createClass } from "./timetable.controller.js";
+import { createClass } from "./class.controller.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 import { allowRoles } from "../../middlewares/role.middleware.js";
 import { generateTimetableController } from "./timetable.controller.js";
