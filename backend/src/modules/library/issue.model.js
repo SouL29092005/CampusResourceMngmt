@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const issueSchema = new mongoose.Schema(
   {
+    issueNumber: {
+      type: Number,
+      required: true,
+      unique: true,
+      index: true,
+    },
+
     book: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book",
