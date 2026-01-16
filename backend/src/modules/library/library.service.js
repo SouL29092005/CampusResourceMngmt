@@ -2,6 +2,9 @@ import Book from "./book.model.js";
 import { generateAccessionNumbers } from "./library.utils.js";
 import Issue from "./issue.model.js";
 import Counter from "../../utils/counter.model.js";
+import StudentProfile from "../users/profiles/student.profile.model.js";
+import User from "../users/user.model.js"
+
 
 export const addBooksInBulk = async (payload) => {
   const {
@@ -36,66 +39,69 @@ export const addBooksInBulk = async (payload) => {
 };
 
 
-export const issueBook = async ({ accessionNumber, userId }) => {
-  if (!accessionNumber || !userId) {
-    throw new Error("accessionNumber and userId are required");
+export const issueBook = async ({ accessionNumber, email }) => {
+  if (!accessionNumber || !email) {
+    throw new Error("accessionNumber and email are required");
   }
 
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  const user = await User.findOne({ email });
 
-  try {
-    const book = await Book.findOne({
-      accessionNumber,
-      status: "AVAILABLE",
-    }).session(session);
+  if (!user) {
+    throw new Error("User not found");
+  }
 
-    if (!book) {
-      throw new Error("Book not available or invalid accession number");
+    if (user.role !== "student") {
+    throw new Error("Only students are eligible for library usage");
+  }
+  console.log(user._id);
+  const studentProfile = await StudentProfile.findOne({ userId : user._id });
+
+
+  if (!studentProfile) {
+    throw new Error("Student profile not found");
+  }
+
+  const book = await Book.findOne({
+    accessionNumber,
+    status: "AVAILABLE",
+  });
+
+  if (!book) {
+    throw new Error("Book not available or invalid accession number");
+  }
+
+  const counter = await Counter.findOneAndUpdate(
+    { name: "issue" },
+    { $inc: { seq: 1 } },
+    {
+      new: true, upsert: true,
     }
+  );
 
-    const counter = await Counter.findOneAndUpdate(
-      { name: "issue" },
-      { $inc: { seq: 1 } },
-      {
-        new: true,
-        upsert: true,
-        session,
-      }
-    );
+  const issueNumber = counter.seq;
 
-    const issueNumber = counter.seq;
+  const issuedAt = new Date();
+  const dueAt = new Date(issuedAt);
+  dueAt.setDate(dueAt.getDate() + 30);
 
-    const issuedAt = new Date();
-    const dueAt = new Date(issuedAt);
-    dueAt.setDate(dueAt.getDate() + 30);
+  const issue = await Issue.create(
+    {
+      issueNumber,
+      book: book._id,
+      user: user._id,
+      issuedAt,
+      dueAt,
+      status: "ISSUED",
+    },
+  );
 
-    const issue = await Issue.create(
-      [
-        {
-          issueNumber,
-          book: book._id,
-          user: userId,
-          issuedAt,
-          dueAt,
-          status: "ISSUED",
-        },
-      ],
-      { session }
-    );
+  book.status = "ISSUED";
+  await book.save();
 
-    book.status = "ISSUED";
-    await book.save({ session });
+  studentProfile.borrowedBooks.push(issue._id);
+  await studentProfile.save();
 
-    await session.commitTransaction();
-    session.endSession();
-
-    return issue[0];
-  } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
-    throw err;
-  }
+  return issue;
 };
 
 
@@ -104,60 +110,61 @@ export const returnBook = async ({ accessionNumber }) => {
     throw new Error("accessionNumber is required");
   }
 
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  const book = await Book.findOne({ accessionNumber });
 
-  try {
-    const book = await Book.findOne({ accessionNumber }).session(session);
-
-    if (!book) {
-      throw new Error("Invalid accession number");
-    }
-
-    if (book.status !== "ISSUED") {
-      throw new Error("Book is not currently issued");
-    }
-
-    const issue = await Issue.findOne({
-      book: book._id,
-      status: "ISSUED",
-    }).session(session);
-
-    if (!issue) {
-      throw new Error("Active issue record not found");
-    }
-
-    const returnedAt = new Date();
-    let fineAmount = 0;
-
-    if (returnedAt > issue.dueAt) {
-      const diffMs = returnedAt - issue.dueAt;
-      const lateDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      fineAmount = lateDays * 2;
-    }
-
-    issue.returnedAt = returnedAt;
-    issue.status = "RETURNED";
-    issue.fineAmount = fineAmount;
-    await issue.save({ session });
-
-    book.status = "AVAILABLE";
-    await book.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
-
-    return {
-      issueId: issue.issueId,
-      accessionNumber,
-      fineAmount,
-      returnedAt,
-    };
-  } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
-    throw err;
+  if (!book) {
+    throw new Error("Invalid accession number");
   }
+
+  if (book.status !== "ISSUED") {
+    throw new Error("Book is not currently issued");
+  }
+
+  const issue = await Issue.findOne({
+    book: book._id,
+    status: "ISSUED",
+  });
+
+  if (!issue) {
+    throw new Error("Active issue record not found");
+  }
+
+  const studentProfile = await StudentProfile.findOne({
+    userId: issue.user,
+  });
+
+  if (!studentProfile) {
+    throw new Error("Student profile not found");
+  }
+
+  const returnedAt = new Date();
+  let fineAmount = 0;
+
+  if (returnedAt > issue.dueAt) {
+    const diffMs = returnedAt - issue.dueAt;
+    const lateDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    fineAmount = lateDays * 2;
+  }
+
+  issue.returnedAt = returnedAt;
+  issue.status = "RETURNED";
+  issue.fineAmount = fineAmount;
+  await issue.save();
+
+  book.status = "AVAILABLE";
+  await book.save();
+
+  studentProfile.borrowedBooks = studentProfile.borrowedBooks.filter(
+    (id) => id.toString() !== issue._id.toString()
+  );
+  await studentProfile.save();
+
+  return {
+    issueNumber: issue.issueNumber,
+    accessionNumber,
+    fineAmount,
+    returnedAt,
+  };
 };
 
 
