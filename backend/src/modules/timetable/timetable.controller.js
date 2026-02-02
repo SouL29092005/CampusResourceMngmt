@@ -48,3 +48,22 @@ export const uploadTimetableCSV = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllTimetableEntries = async (req, res, next) => {
+  try {
+    const timetable = await TimetableEntry.find({}).sort({
+      dayOfWeek: 1,
+      startTime: 1
+    });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        timetable,
+        "All timetable entries fetched successfully"
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};

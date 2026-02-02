@@ -1,6 +1,9 @@
 import http from "http";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
+import { startBookingStatusJob } from "./jobs/bookingStatus.job.js";
+import { startRoomBookingStatusJob } from "./jobs/roomBookingStatus.job.js";
+
 
 import app from "./app.js";
 import connectDB from "./config/db.js";
@@ -11,6 +14,11 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
+
+  if (process.env.ENABLE_CRON === "true") {
+    startBookingStatusJob();
+    startRoomBookingStatusJob();
+  }
 
   const server = http.createServer(app);
 

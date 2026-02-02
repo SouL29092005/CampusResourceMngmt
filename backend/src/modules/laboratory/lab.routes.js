@@ -1,5 +1,11 @@
 import express from "express";
-import { addEquipment, updateEquipment, bookEquipment, cancelEquipmentBooking,  } from "./lab.controller.js";
+import { addEquipment, 
+  updateEquipment, 
+  bookEquipment, 
+  cancelEquipmentBooking, 
+  getAllActiveEquipmentBookings, 
+  getAllEquipments,
+  deleteEquipment  } from "./lab.controller.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 import { allowRoles } from "../../middlewares/role.middleware.js"
 import { getFreeSlots } from "./lab.service.js";
@@ -40,5 +46,28 @@ router.get(
   allowRoles("student"),
   getFreeSlots
 );
+
+router.get(
+  "/bookings/active",
+  protect,
+  allowRoles("admin", "lab_admin"),
+  getAllActiveEquipmentBookings
+);
+
+router.get(
+  "/getEquipments",
+  protect,
+  allowRoles("admin", "lab_admin", "student"),
+  getAllEquipments
+)
+
+router.delete(
+  "/equipment/:id",
+  protect,
+  allowRoles("admin", "lab_admin"),
+  deleteEquipment
+);
+
+
 
 export default router;

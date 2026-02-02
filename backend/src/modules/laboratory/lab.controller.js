@@ -1,4 +1,10 @@
-import { createEquipment, updateEquipmentService, createBooking, cancelBooking } from "./lab.service.js";
+import { createEquipment, 
+  updateEquipmentService, 
+  createBooking, 
+  cancelBooking, 
+  getAllActiveBookings, 
+  getAllEquipmentsService, 
+  deleteEquipmentById } from "./lab.service.js";
 import User from "../users/user.model.js";
 
 export const addEquipment = async (req, res) => {
@@ -109,3 +115,57 @@ export const cancelEquipmentBooking = async (req, res) => {
     });
   }
 };
+
+
+export const getAllActiveEquipmentBookings = async (req, res) => {
+  try {
+    const bookings = await getAllActiveBookings();
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+export const getAllEquipments = async (req, res) => {
+  try {
+    const equipments = await getAllEquipmentsService();
+
+    res.status(200).json({
+      success: true,
+      equipments
+    });
+  } catch (err) {
+    console.error("GET ALL EQUIPMENTS ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+export const deleteEquipment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await deleteEquipmentById(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Equipment deleted successfully"
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+

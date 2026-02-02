@@ -9,7 +9,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
 import Library from "./pages/admin/Library";
 import Lab from "./pages/admin/Lab";
-//import Rooms from "./pages/admin/Rooms";
+import Rooms from "./pages/admin/Rooms";
 import Timetable from "./pages/admin/Timetable";
 
 export default function App() {
@@ -25,6 +25,7 @@ export default function App() {
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/library" element={<Library />} />
         <Route path="/admin/lab" element={<Lab />} />
+        <Route path="/admin/rooms" element={<Rooms />} />
         <Route path="/admin/timetable" element={<Timetable />} />
       </Route>
     </Routes>

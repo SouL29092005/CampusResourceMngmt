@@ -165,3 +165,39 @@ export const getFreeSlots = async (equipmentNumber) => {
 
   return freeSlots;
 };
+
+export const getAllActiveBookings = async () => {
+  return await Booking.find({ status: "active" })
+    .populate("equipment", "name labName location equipmentNumber")
+    .populate("bookedBy", "name email")
+    .sort({ startTime: 1 });
+};
+
+export const getAllEquipmentsService = async () => {
+  return await Equipment.find()
+    .populate({
+      path: "maintainedBy",
+      populate: {
+        path: "userId",
+        select: "name email"
+      }
+    })
+    .sort({ createdAt: -1 });
+};
+
+export const deleteEquipmentById = async (equipmentId) => {
+  const equipment = await Equipment.findById(equipmentId);
+
+  if (!equipment) {
+    throw new Error("Equipment not found");
+  }
+
+  await LabAdminProfile.updateOne(
+    { _id: equipment.maintainedBy },
+    { $pull: { managedEquipment: equipment._id } }
+  );
+
+  await equipment.deleteOne();
+
+  return equipment;
+};
