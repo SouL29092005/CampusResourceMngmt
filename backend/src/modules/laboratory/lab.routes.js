@@ -5,10 +5,11 @@ import { addEquipment,
   cancelEquipmentBooking, 
   getAllActiveEquipmentBookings, 
   getAllEquipments,
-  deleteEquipment  } from "./lab.controller.js";
+  deleteEquipment,
+  getUserBookings,
+  getFreeSlots } from "./lab.controller.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 import { allowRoles } from "../../middlewares/role.middleware.js"
-import { getFreeSlots } from "./lab.service.js";
 
 const router = express.Router();
 
@@ -31,6 +32,13 @@ router.post(
   protect,
   allowRoles("student"),
   bookEquipment
+);
+
+router.get(
+  "/bookings/my",
+  protect,
+  allowRoles("student"),
+  getUserBookings
 );
 
 router.patch(

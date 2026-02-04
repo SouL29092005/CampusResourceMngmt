@@ -222,3 +222,16 @@ export const searchBookByName = async (title) => {
 
   return books;
 };
+
+export const getIssuesByUser = async (userId) => {
+  return await Issue.find({ user: userId })
+    .populate({
+      path: "book",
+      select: "title author accessionNumber category",
+    })
+    .populate({
+      path: "user",
+      select: "name email",
+    })
+    .sort({ issuedAt: -1 });
+};

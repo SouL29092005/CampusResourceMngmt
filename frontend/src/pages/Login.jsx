@@ -28,6 +28,8 @@ function Login() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", user.role);
+      // store display name for welcome banner
+      if (user?.name) localStorage.setItem("userName", user.name);
 
       switch (user.role) {
         case "admin":

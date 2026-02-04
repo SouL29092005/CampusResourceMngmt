@@ -93,6 +93,29 @@ export const createBooking = async ({
   const maxAllowedDate = new Date();
   maxAllowedDate.setDate(now.getDate() + 3);
 
+  // normalize inputs
+  if (!(startTime instanceof Date)) startTime = new Date(startTime);
+  if (!(endTime instanceof Date)) endTime = new Date(endTime);
+
+  if (isNaN(startTime) || isNaN(endTime)) {
+    throw new Error("Invalid start or end time");
+  }
+
+  if (endTime <= startTime) {
+    throw new Error("End time must be after start time");
+  }
+
+  const diffMs = endTime - startTime;
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  if (diffDays > 2) {
+    throw new Error("Maximum booking duration is 2 days");
+  }
+
+  if (startTime < now) {
+    throw new Error("Cannot book in the past");
+  }
+
   if (startTime > maxAllowedDate) {
     throw new Error("Cannot book equipment beyond next 3 days");
   }
@@ -168,6 +191,13 @@ export const getFreeSlots = async (equipmentNumber) => {
 
 export const getAllActiveBookings = async () => {
   return await Booking.find({ status: "active" })
+    .populate("equipment", "name labName location equipmentNumber")
+    .populate("bookedBy", "name email")
+    .sort({ startTime: 1 });
+};
+
+export const getBookingsByUser = async (userId) => {
+  return await Booking.find({ bookedBy: userId })
     .populate("equipment", "name labName location equipmentNumber")
     .populate("bookedBy", "name email")
     .sort({ startTime: 1 });

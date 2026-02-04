@@ -1,5 +1,5 @@
 import express from "express";
-import { addBooks, issueBook, returnBook, updateBookStatus, getActiveIssues, searchBookByName } from "./library.controller.js";
+import { addBooks, issueBook, returnBook, updateBookStatus, getActiveIssues, searchBookByName, getMyIssues } from "./library.controller.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 import { allowRoles } from "../../middlewares/role.middleware.js";
 
@@ -38,6 +38,13 @@ router.get(
   protect,
   allowRoles("librarian", "admin"),
   getActiveIssues
+);
+
+router.get(
+  "/issues/my",
+  protect,
+  allowRoles("student"),
+  getMyIssues
 );
 
 router.get(

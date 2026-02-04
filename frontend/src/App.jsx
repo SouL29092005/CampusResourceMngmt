@@ -12,6 +12,8 @@ import Lab from "./pages/admin/Lab";
 import Rooms from "./pages/admin/Rooms";
 import Timetable from "./pages/admin/Timetable";
 
+import StudentDashboard from "./pages/student/StudentDashboard";
+
 export default function App() {
   return (
     <Routes>
@@ -27,6 +29,11 @@ export default function App() {
         <Route path="/admin/lab" element={<Lab />} />
         <Route path="/admin/rooms" element={<Rooms />} />
         <Route path="/admin/timetable" element={<Timetable />} />
+      </Route>
+
+      {/* Student Protected Routes */}
+      <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+        <Route path="/student/dashboard" element={<StudentDashboard />} />
       </Route>
     </Routes>
   );

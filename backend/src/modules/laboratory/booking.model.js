@@ -47,24 +47,25 @@ bookingSchema.pre("save", function () {
   const now = new Date();
 
   if (this.endTime <= this.startTime) {
-    return next(new Error("End time must be after start time"));
+    throw new Error("End time must be after start time");
   }
 
   const diffMs = this.endTime - this.startTime;
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
   if (diffDays > 2) {
-    return next(new Error("Maximum booking duration is 2 days"));
+    throw new Error("Maximum booking duration is 2 days");
   }
 
   const maxStartTime = new Date(now);
   maxStartTime.setDate(maxStartTime.getDate() + 3);
 
   if (this.startTime > maxStartTime) {
-    return next(
-      new Error("Booking start time must be within the next 3 days")
-    );
+    throw new Error("Booking start time must be within the next 3 days");
   }
+
+  // all validations passed
+  return;
 });
 
 export default mongoose.model("Booking", bookingSchema);

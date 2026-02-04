@@ -4,7 +4,9 @@ import { createEquipment,
   cancelBooking, 
   getAllActiveBookings, 
   getAllEquipmentsService, 
-  deleteEquipmentById } from "./lab.service.js";
+  deleteEquipmentById,
+  getBookingsByUser,
+  getFreeSlots as getFreeSlotsService } from "./lab.service.js";
 import User from "../users/user.model.js";
 
 export const addEquipment = async (req, res) => {
@@ -79,6 +81,7 @@ export const updateEquipment = async (req, res) => {
 
 export const bookEquipment = async (req, res) => {
   try {
+    console.log("BOOK EQUIPMENT REQUEST", { body: req.body, user: req.user?._id });
     const { equipmentNumber, startTime, endTime } = req.body;
 
     const booking = await createBooking({
@@ -90,6 +93,7 @@ export const bookEquipment = async (req, res) => {
 
     res.status(201).json({ success: true, booking });
   } catch (err) {
+    console.error("BOOK EQUIPMENT ERROR", err);
     res.status(400).json({ success: false, message: err.message });
   }
 };
@@ -110,6 +114,40 @@ export const cancelEquipmentBooking = async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+export const getFreeSlots = async (req, res) => {
+  try {
+    const { equipmentNumber } = req.params;
+    const slots = await getFreeSlotsService(Number(equipmentNumber));
+
+    res.status(200).json({
+      success: true,
+      data: slots
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+export const getUserBookings = async (req, res) => {
+  try {
+    const bookings = await getBookingsByUser(req.user._id);
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings
+    });
+  } catch (err) {
+    res.status(500).json({
       success: false,
       message: err.message
     });

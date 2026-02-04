@@ -68,6 +68,19 @@ export const getActiveIssues = async (req, res, next) => {
   }
 };
 
+export const getMyIssues = async (req, res, next) => {
+  try {
+    const issues = await libraryService.getIssuesByUser(req.user._id);
+
+    res.status(200).json({
+      count: issues.length,
+      data: issues,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 export const searchBookByName = async (req, res, next) => {
   try {
