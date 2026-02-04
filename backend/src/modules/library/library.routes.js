@@ -1,5 +1,5 @@
 import express from "express";
-import { addBooks, issueBook, returnBook, updateBookStatus, getActiveIssues, searchBookByName, getMyIssues } from "./library.controller.js";
+import { addBooks, issueBook, returnBook, updateBookStatus, getActiveIssues, searchBookByName, getMyIssues, getBookByAccession, getOverdueIssues } from "./library.controller.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 import { allowRoles } from "../../middlewares/role.middleware.js";
 
@@ -45,6 +45,20 @@ router.get(
   protect,
   allowRoles("student"),
   getMyIssues
+);
+
+router.get(
+  "/issues/overdue",
+  protect,
+  allowRoles("librarian", "admin"),
+  getOverdueIssues
+);
+
+router.get(
+  "/book/:accessionNumber",
+  protect,
+  allowRoles("librarian", "admin"),
+  getBookByAccession
 );
 
 router.get(

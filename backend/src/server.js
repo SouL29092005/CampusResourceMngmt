@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import { startBookingStatusJob } from "./jobs/bookingStatus.job.js";
 import { startRoomBookingStatusJob } from "./jobs/roomBookingStatus.job.js";
+import { startIssueOverdueJob } from "./jobs/issueOverdue.job.js";
 
 
 import app from "./app.js";
@@ -15,9 +16,17 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   await connectDB();
 
-  if (process.env.ENABLE_CRON === "true") {
+  const enableCronRaw = String(process.env.ENABLE_CRON || "").toLowerCase();
+  const cronEnabled = !["false", "0", "no"].includes(enableCronRaw);
+  console.log("ENABLE_CRON:", process.env.ENABLE_CRON, "=> cronEnabled:", cronEnabled);
+
+  if (cronEnabled) {
+    console.log("Cron jobs are enabled");
     startBookingStatusJob();
     startRoomBookingStatusJob();
+    startIssueOverdueJob();
+  } else {
+    console.log("Cron jobs are disabled");
   }
 
   const server = http.createServer(app);

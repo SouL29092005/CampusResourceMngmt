@@ -11,6 +11,7 @@ import Library from "./pages/admin/Library";
 import Lab from "./pages/admin/Lab";
 import Rooms from "./pages/admin/Rooms";
 import Timetable from "./pages/admin/Timetable";
+import LibrarianDashboard from "./pages/librarian/LibrarianDashboard";
 
 import StudentDashboard from "./pages/student/StudentDashboard";
 
@@ -31,9 +32,15 @@ export default function App() {
         <Route path="/admin/timetable" element={<Timetable />} />
       </Route>
 
-      {/* Student Protected Routes */}
+          {/* Student Protected Routes */}
       <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
         <Route path="/student/dashboard" element={<StudentDashboard />} />
+      </Route>
+
+      {/* Librarian Protected Routes */}
+      <Route element={<ProtectedRoute allowedRoles={["librarian"]} />}>
+        <Route path="/librarian/library" element={<LibrarianDashboard />} />
+        <Route path="/librarian/dashboard" element={<LibrarianDashboard />} />
       </Route>
     </Routes>
   );

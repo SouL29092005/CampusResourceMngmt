@@ -208,6 +208,21 @@ export const getActiveIssues = async () => {
   return issues;
 };
 
+export const getOverdueIssues = async () => {
+  const issues = await Issue.find({ status: "OVERDUE" })
+    .populate({
+      path: "book",
+      select: "title author accessionNumber category",
+    })
+    .populate({
+      path: "user",
+      select: "name email",
+    })
+    .sort({ dueAt: -1 });
+
+  return issues;
+};
+
 
 export const searchBookByName = async (title) => {
   if (!title) {
@@ -221,6 +236,21 @@ export const searchBookByName = async (title) => {
     .limit(20);
 
   return books;
+};
+
+export const getBookByAccession = async (accessionNumber) => {
+  if (!accessionNumber) {
+    throw new Error("accessionNumber is required");
+  }
+
+  const book = await Book.findOne({ accessionNumber })
+    .select("title author accessionNumber status category");
+
+  if (!book) {
+    throw new Error("Invalid accession number");
+  }
+
+  return book;
 };
 
 export const getIssuesByUser = async (userId) => {

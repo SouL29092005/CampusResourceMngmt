@@ -43,7 +43,7 @@ export const returnBook = async (req, res, next) => {
 
 export const updateBookStatus = async (req, res, next) => {
   try {
-    const result = await libraryService.removeBook(req.body);
+    const result = await libraryService.updateBookStatus(req.body);
 
     res.status(200).json({
       message: "Book status updated successfully",
@@ -68,6 +68,19 @@ export const getActiveIssues = async (req, res, next) => {
   }
 };
 
+export const getOverdueIssues = async (req, res, next) => {
+  try {
+    const issues = await libraryService.getOverdueIssues();
+
+    res.status(200).json({
+      count: issues.length,
+      data: issues,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getMyIssues = async (req, res, next) => {
   try {
     const issues = await libraryService.getIssuesByUser(req.user._id);
@@ -81,6 +94,21 @@ export const getMyIssues = async (req, res, next) => {
   }
 };
 
+
+export const getBookByAccession = async (req, res, next) => {
+  try {
+    const { accessionNumber } = req.params;
+
+    const book = await libraryService.getBookByAccession(accessionNumber);
+
+    res.status(200).json({
+      success: true,
+      data: book,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const searchBookByName = async (req, res, next) => {
   try {
