@@ -14,6 +14,11 @@ const studentProfileSchema = new mongoose.Schema(
       required: true
     },
 
+    className: {
+      type: String,
+      required: false
+    },
+
     enrolledSubjects: [
       {
         type: mongoose.Schema.Types.ObjectId,

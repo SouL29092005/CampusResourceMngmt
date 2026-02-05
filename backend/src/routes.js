@@ -14,9 +14,9 @@ import roomBookingRoutes from "./modules/room/roomBooking.routes.js";
 const router = express.Router();
 
 router.use("/users", userRoutes);
+router.use("/users", profileRoutes);
 router.use("/auth", authRoutes);
 router.use("/timetable", timetableRoutes);
-router.use("/profile", profileRoutes);
 router.use("/subject", subjectRoutes);
 router.use("/library", libraryRoutes);
 router.use("/lab", labRoutes);

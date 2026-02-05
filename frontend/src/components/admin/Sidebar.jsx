@@ -6,6 +6,7 @@ const links = [
   { to: "/admin/library", label: "Library" },
   { to: "/admin/lab", label: "Lab Equipments" },
   { to: "/admin/rooms", label: "Rooms" },
+  { to: "/admin/courses", label: "Courses" },
   { to: "/admin/timetable", label: "Timetable" }
 ];
 

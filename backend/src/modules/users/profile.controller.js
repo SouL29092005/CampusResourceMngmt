@@ -49,7 +49,7 @@ export const updateMyProfile = async (req, res) => {
       profile = await StudentProfile.findOneAndUpdate(
         { userId },
         updates,
-        { new: true, runValidators: true }
+        { new: true, runValidators: true, upsert: true }
       );
       break;
 
@@ -72,7 +72,7 @@ export const updateMyProfile = async (req, res) => {
       profile = await FacultyProfile.findOneAndUpdate(
         { userId },
         updates,
-        { new: true, runValidators: true }
+        { new: true, runValidators: true, upsert: true }
       );
       break;
 
@@ -80,7 +80,7 @@ export const updateMyProfile = async (req, res) => {
       profile = await LibrarianProfile.findOneAndUpdate(
         { userId },
         updates,
-        { new: true }
+        { new: true, upsert: true }
       );
       break;
 
@@ -88,7 +88,7 @@ export const updateMyProfile = async (req, res) => {
       profile = await LabAdminProfile.findOneAndUpdate(
         { userId },
         updates,
-        { new: true }
+        { new: true, upsert: true }
       );
       break;
   }

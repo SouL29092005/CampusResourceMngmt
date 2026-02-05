@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import AddBooksModal from "../../components/library/AddBooksModal";
 import { fetchActiveIssues, fetchOverdueIssues, searchBookByName, issueBook, returnBook, getBookByAccession, updateBookStatus } from "../../api/library.api";
 import { useNavigate } from "react-router-dom";
+import ViewProfile from "../../components/profile/ViewProfile";
 
 export default function LibrarianDashboard() {
   const [issues, setIssues] = useState([]);
@@ -27,6 +28,7 @@ export default function LibrarianDashboard() {
   // return modal
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returnResult, setReturnResult] = useState(null);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const navigate = useNavigate();
 
@@ -89,7 +91,6 @@ export default function LibrarianDashboard() {
     try {
       setActionLoading(true);
       const res = await returnBook({ accessionNumber });
-      // show result in modal
       setReturnResult(res.data.data);
       setShowReturnModal(true);
       loadIssues();
@@ -132,6 +133,36 @@ export default function LibrarianDashboard() {
         <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700">Logout</button>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="mb-6 flex gap-4 border-b-2">
+        <button
+          onClick={() => setActiveTab("dashboard")}
+          className={`px-4 py-2 font-semibold transition ${
+            activeTab === "dashboard"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => setActiveTab("profile")}
+          className={`px-4 py-2 font-semibold transition ${
+            activeTab === "profile"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+        >
+          My Profile
+        </button>
+      </div>
+
+      {/* Profile Tab */}
+      {activeTab === "profile" && <ViewProfile />}
+
+      {/* Dashboard Tab */}
+      {activeTab === "dashboard" && (
+      <>
       <div className="flex gap-4 mb-6 items-start">
         <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded">Add Books</button>
 
@@ -215,6 +246,8 @@ export default function LibrarianDashboard() {
           </div>
         </div>
       </div>
+      </>
+      )}
 
       <div className="bg-white p-6 rounded shadow">
         <h2 className="font-semibold mb-4">Active Book Issues</h2>

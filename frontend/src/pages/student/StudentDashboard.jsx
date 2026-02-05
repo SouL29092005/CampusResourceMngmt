@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyIssues } from "../../api/library.api";
 import { getMyBookings, getAllEquipments, getFreeSlots, bookEquipment, cancelBooking } from "../../api/lab.api";
+import ViewProfile from "../../components/profile/ViewProfile";
 
 export default function StudentDashboard() {
   const [issues, setIssues] = useState([]);
@@ -20,6 +21,7 @@ export default function StudentDashboard() {
   const [customEnd, setCustomEnd] = useState("");
   const [bookingLoading, setBookingLoading] = useState(false);
   const [userName, setUserName] = useState("");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const navigate = useNavigate();
 
@@ -176,6 +178,36 @@ export default function StudentDashboard() {
         <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700">Logout</button>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="mb-6 flex gap-4 border-b-2">
+        <button
+          onClick={() => setActiveTab("dashboard")}
+          className={`px-4 py-2 font-semibold transition ${
+            activeTab === "dashboard"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => setActiveTab("profile")}
+          className={`px-4 py-2 font-semibold transition ${
+            activeTab === "profile"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+        >
+          My Profile
+        </button>
+      </div>
+
+      {/* Profile Tab */}
+      {activeTab === "profile" && <ViewProfile />}
+
+      {/* Dashboard Tab */}
+      {activeTab === "dashboard" && (
+        <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded shadow">
           <h2 className="text-lg font-semibold mb-4">My Borrowed Books</h2>
@@ -322,6 +354,8 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

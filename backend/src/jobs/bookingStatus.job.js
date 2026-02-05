@@ -3,7 +3,7 @@ import Booking from "../modules/laboratory/booking.model.js";
 import Equipment from "../modules/laboratory/equipment.model.js";
 
 export const startBookingStatusJob = () => {
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("0 * * * * *", async () => {
     const now = new Date();
 
     try {

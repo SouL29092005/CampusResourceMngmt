@@ -10,6 +10,7 @@ import Users from "./pages/admin/Users";
 import Library from "./pages/admin/Library";
 import Lab from "./pages/admin/Lab";
 import Rooms from "./pages/admin/Rooms";
+import Courses from "./pages/admin/Courses";
 import Timetable from "./pages/admin/Timetable";
 import LibrarianDashboard from "./pages/librarian/LibrarianDashboard";
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/admin/library" element={<Library />} />
         <Route path="/admin/lab" element={<Lab />} />
         <Route path="/admin/rooms" element={<Rooms />} />
+        <Route path="/admin/courses" element={<Courses />} />
         <Route path="/admin/timetable" element={<Timetable />} />
       </Route>
 
